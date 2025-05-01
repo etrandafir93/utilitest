@@ -37,12 +37,12 @@ Argument(s) are different! Wanted:
 fooService.process(
     <custom argument matcher>
 );
--> at io.github.etr.utilitest.ReadmeExampelsTest$FooService.process(ReadmeExampelsTest.java:26)
+-> at io.github.etr.utilitest.mockito.ReadmeExampelsTest$FooService.process(ReadmeExampelsTest.java:26)
 Actual invocations have different arguments:
 fooService.process(
-    io.github.etr.utilitest.ReadmeExampelsTest$Account@245a26e1
+    io.github.etr.utilitest.mockito.ReadmeExampelsTest$Account@245a26e1
 );
--> at io.github.etr.utilitest.ReadmeExampelsTest.customAssertMatcher(ReadmeExampelsTest.java:62)
+-> at io.github.etr.utilitest.mockito.ReadmeExampelsTest.customAssertMatcher(ReadmeExampelsTest.java:62)
 ```
 
 As a workaround, we can use a fluent AssertJ assertion within the custom _ArgumentMatcher_ and always return true:
@@ -79,7 +79,7 @@ This approach brings together the best of both worlds: the convenience of verify
 ```plaintext
 java.lang.AssertionError: 
 Expecting
-  io.github.etr.utilitest.ReadmeExampelsTest$Account@f5c79a6
+  io.github.etr.utilitest.mockito.ReadmeExampelsTest$Account@f5c79a6
 to have a property or a field named "email" with value
   "johndoe@gmail.com"
 but value was:

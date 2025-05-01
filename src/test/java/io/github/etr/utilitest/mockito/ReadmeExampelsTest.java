@@ -1,7 +1,7 @@
-package io.github.etr.utilitest;
+package io.github.etr.utilitest.mockito;
 
-import static io.github.etr.utilitest.MockitoAndAssertJ.arg;
-import static io.github.etr.utilitest.MockitoAndAssertJ.argThat;
+import static io.github.etr.utilitest.mockito.MockitoAndAssertJ.arg;
+import static io.github.etr.utilitest.mockito.MockitoAndAssertJ.argThat;
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.assertj.core.api.Assertions.within;

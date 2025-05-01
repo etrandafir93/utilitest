@@ -1,4 +1,4 @@
-package io.github.etr.utilitest;
+package io.github.etr.utilitest.mockito;
 
 import java.util.function.Consumer;
 import org.assertj.core.api.AbstractAssert;
