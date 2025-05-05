@@ -1,6 +1,7 @@
 # Utilitest
 
-Utilitest is a collection of test utilities that provides integration support for popular testing libraries like AssertJ, Mockito, and Awaitility.
+Utilitest is a collection of test utilities that provides integration support for popular 
+testing libraries like AssertJ, Mockito, and Awaitility.
 
 Go ahead and add the latest version of the [library](https://github.com/etrandafir93/utilitest/packages) to your project:
 ```xml
@@ -12,9 +13,18 @@ Go ahead and add the latest version of the [library](https://github.com/etrandaf
 </dependency>
 ```
 
+## JUnit Lambdas
+
+Utilitest provides a JUnit extension that enables us to use lambda expressions 
+instead of the commonly used Before/After Each/All block methods.
+
+(Coming Soon...)
+
 ## Mockito's _AssertMatcher_ and AsserJ
 
-To use _verify()_ mocks, we generally have two options. We can either capture the arguments using a _Captor_, which adds some boilerplate code and overhead, or we can use Mockito's _ArgumentMatchers_ to verify the arguments directly with a lambda:
+To use _verify()_ mocks, we generally have two options. We can either capture the arguments 
+using a _Captor_, which adds some boilerplate code and overhead, 
+or we can use Mockito's _ArgumentMatchers_ to verify the arguments directly with a lambda:
 
 ```java
 @Test
@@ -30,7 +40,8 @@ void customAssertMatcher() {
 }
 ```
 
-However, the failure messages from these custom argument matchers are often cryptic, making it difficult to pinpoint the cause of the test failure:
+However, the failure messages from these custom argument matchers are often cryptic, 
+making it difficult to pinpoint the cause of the test failure:
 
 ```plaintext
 Argument(s) are different! Wanted:
@@ -45,7 +56,8 @@ fooService.process(
 -> at io.github.etr.utilitest.mockito.ReadmeExampelsTest.customAssertMatcher(ReadmeExampelsTest.java:62)
 ```
 
-As a workaround, we can use a fluent AssertJ assertion within the custom _ArgumentMatcher_ and always return true:
+As a workaround, we can use a fluent AssertJ assertion within the custom _ArgumentMatcher_ 
+and always return true:
 
 ```java
 @Test
@@ -63,7 +75,9 @@ void assertMatcherWithAssertJ() {
       }));
 }
 ```
-While this solution provides much clearer error messages, it comes with the downside of adding a lot of boilerplate code. If the code is repetitive, it can make the tests harder to read and maintain.
+While this solution provides much clearer error messages, it comes with 
+the downside of adding a lot of boilerplate code. If the code is repetitive, 
+it can make the tests harder to read and maintain.
 
 So, let's remove all this ceremony and use utilitest's `MockitoAndAssertJ::argThat` instead:
 
@@ -74,7 +88,9 @@ Mockito.verify(mock).process(
     .hasFieldOrPropertyWithValue("name", "John Doe")
     .hasFieldOrPropertyWithValue("email", "johndoe@gmail.com")));
 ```
-This approach brings together the best of both worlds: the convenience of verifying the argument using a lambda expression and the fluent API of AssertJ, providing clear and descriptive error messages:
+This approach brings together the best of both worlds: the convenience of verifying 
+the argument using a lambda expression and the fluent API of AssertJ, 
+providing clear and descriptive error messages:
 
 ```plaintext
 java.lang.AssertionError: 
@@ -88,7 +104,11 @@ but value was:
 
 ### Other Assertions
 
-The `MockitoAndAssertJ::argThat` from the previous example enables us to consume an ObjectAssert from AsserJ, that provides some basic assertions. The assertJ API allows us to change this type to a more specialized instance of assertion, to verify specific properties. For example, we can change the assertion type to a MapAssert to be able to check speciifc key-value entries:
+The `MockitoAndAssertJ::argThat` from the previous example enables us 
+to consume an ObjectAssert from AsserJ, that provides some basic assertions. 
+The assertJ API allows us to change this type to a more specialized instance of assertion, 
+to verify specific properties. For example, we can change the assertion type to a MapAssert 
+to be able to check specific key-value entries:
 
 ```java
 @Test
@@ -108,7 +128,9 @@ void asInstanceOf() {
       .containsEntry(2L, "Bobby")));
 }
 ```
-With MockitoAndAssertJ, we can also specify InstanceOfAssertFactories upfront. To achieve this, we split the argThat into two separate methods: `MockitoAndAssertJ.arg(InstanceOfAssertFactories.MAP).that(it -> ...)`. 
+With MockitoAndAssertJ, we can also specify InstanceOfAssertFactories upfront. 
+To achieve this, we split the argThat into two separate methods: 
+`MockitoAndAssertJ.arg(InstanceOfAssertFactories.MAP).that(it -> ...)`. 
 
 Let's use this API to verify a method that accepts a _LocalDateTime_ and a _List_ of Strings:
 
