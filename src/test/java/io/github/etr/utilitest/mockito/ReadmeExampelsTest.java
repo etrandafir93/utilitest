@@ -17,7 +17,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-class ReadmeExampelsTest {
+class ReadmeExamplesTest {
 
     static class FooService {
 
