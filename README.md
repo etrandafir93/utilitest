@@ -18,7 +18,93 @@ Go ahead and add the latest version of the [library](https://github.com/etrandaf
 Utilitest provides a JUnit extension that enables us to use lambda expressions 
 instead of the commonly used Before/After Each/All block methods.
 
-(Coming Soon...)
+This library provides annotations to simplify test lifecycle management in JUnit 
+by allowing you to define setup and cleanup logic directly on fields. 
+The annotations [@DoBeforeAll](./src/main/java/io/github/etr/utilitest/junit/lambdas/DoBeforeAll.java),
+[@DoBeforeEach](./src/main/java/io/github/etr/utilitest/junit/lambdas/DoBeforeEach.java),
+[@DoAfterAll](./src/main/java/io/github/etr/utilitest/junit/lambdas/DoAfterAll.java),
+and [@DoAfterEach](./src/main/java/io/github/etr/utilitest/junit/lambdas/DoAfterEach.java),
+enable concise and readable test code by invoking specified methods 
+or functional interfaces before/after tests.
+
+We can use these annotations at a field level in two ways:
+1. **We can annotate fields that are functional interfaces**: 
+```java
+static File resource;
+
+@DoBeforeAll
+static ThrowingRunnable setUp = () -> 
+    resource = Files.createTempFile("test", ".tmp").toFile();
+
+@DoAfterAll
+static ThrowingRunnable tearDown = () -> 
+    resource.delete();
+```
+1. **We can annotate other fields and define the method to invoke**: 
+```java
+@DoBeforeEach(invoke = "init")
+@DoAfterEach(invoke = "reset")
+static Resource resource = ...;
+```
+### Example
+
+Here is a simple test which doesn't use any of the annotations:
+```java
+class JunitLambdasReadmeTests {
+
+    static File resource = null;
+    
+    @BeforeAll
+    static void setUp() {
+        try {
+            resource = Files.createTempFile("test", ".txt").toFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @BeforeEach
+    void clean() {
+        try {
+            Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @AfterAll
+    static void tearDown() {
+        try {
+            Files.delete(resource.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    // some tests
+}
+```
+
+With Junit-lambdas, we can simplify the code to:
+
+```java 
+@ExtendWith(JunitLambdasExtension.class)
+class JunitLambdasReadmeTests {
+
+    @DoAfterAll(invoke = "delete")
+    static File resource = null;
+
+    @DoBeforeAll
+    static ThrowingRunnable setUp = () -> 
+        resource = Files.createTempFile("test", ".txt").toFile();
+
+    @DoBeforeEach
+    ThrowingRunnable clean = () -> 
+        Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
+
+    // tests...
+}
+```    
 
 ## Mockito's _AssertMatcher_ and AsserJ
 

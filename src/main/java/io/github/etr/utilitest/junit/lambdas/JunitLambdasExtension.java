@@ -1,4 +1,4 @@
-package io.github.etr.utilitest.lambda;
+package io.github.etr.utilitest.junit.lambdas;
 
 import static java.util.function.Predicate.not;
 

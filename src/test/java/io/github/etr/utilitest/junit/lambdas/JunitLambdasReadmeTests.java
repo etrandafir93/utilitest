@@ -1,4 +1,4 @@
-package io.github.etr.utilitest.lambda;
+package io.github.etr.utilitest.junit.lambdas;
 
 import static java.nio.file.Files.writeString;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(JunitLambdasExtension.class)
 class JunitLambdasReadmeTests {
 
+    @DoAfterAll(invoke = "delete")
     static File resource = null;
 
     @DoBeforeAll
@@ -46,7 +47,11 @@ class JunitLambdasReadmeTests {
     //
     //    @AfterAll
     //    static void tearDown() {
-    //        Files.delete(resource.toPath());
+    //        try {
+    //            Files.delete(resource.toPath());
+    //        } catch (IOException e) {
+    //            throw new RuntimeException(e);
+    //        }
     //    }
 
     private void cleanTheFile() {
