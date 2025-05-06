@@ -24,9 +24,6 @@ class JunitLambdasReadmeTests {
     @DoBeforeEach
     ThrowingRunnable clean = () -> Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
 
-    @DoAfterAll
-    static ThrowingRunnable tearDown = () -> Files.delete(resource.toPath());
-
     //    @BeforeAll
     //    static void setUp() {
     //        try {
@@ -53,14 +50,6 @@ class JunitLambdasReadmeTests {
     //            throw new RuntimeException(e);
     //        }
     //    }
-
-    private void cleanTheFile() {
-        try {
-            writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to clear the file", e);
-        }
-    }
 
     @Test
     void shouldPassIfFileCleared1() throws IOException {

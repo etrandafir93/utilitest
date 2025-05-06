@@ -49,39 +49,30 @@ static Resource resource = ...;
 ### Example
 
 Here is a simple test which doesn't use any of the annotations:
+
 ```java
+import java.io.IOException;
+
 class JunitLambdasReadmeTests {
 
     static File resource = null;
-    
+
     @BeforeAll
-    static void setUp() {
-        try {
-            resource = Files.createTempFile("test", ".txt").toFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    static void setUp() throws IOException {
+        resource = Files.createTempFile("test", ".txt").toFile();
     }
 
     @BeforeEach
-    void clean() {
-        try {
-            Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    void clean() throws IOException {
+        Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
     }
 
     @AfterAll
-    static void tearDown() {
-        try {
-            Files.delete(resource.toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    static void tearDown() throws IOException {
+        Files.delete(resource.toPath());
     }
-    
-    // some tests
+
+    // some tests...
 }
 ```
 
@@ -102,7 +93,7 @@ class JunitLambdasReadmeTests {
     ThrowingRunnable clean = () -> 
         Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
 
-    // tests...
+    // some tests...
 }
 ```    
 
