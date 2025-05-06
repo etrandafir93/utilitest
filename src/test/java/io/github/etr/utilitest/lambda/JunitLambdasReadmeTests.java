@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -18,39 +17,37 @@ class JunitLambdasReadmeTests {
     static File resource = null;
 
     @DoBeforeAll
-    static ThrowingRunnable setUp = () ->
-        resource = Files.createTempFile("test", ".txt").toFile();
+    static ThrowingRunnable setUp =
+            () -> resource = Files.createTempFile("test", ".txt").toFile();
 
     @DoBeforeEach
-    ThrowingRunnable clean = () ->
-        Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
+    ThrowingRunnable clean = () -> Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
 
     @DoAfterAll
-    static ThrowingRunnable tearDown = () ->
-        Files.delete(resource.toPath());
+    static ThrowingRunnable tearDown = () -> Files.delete(resource.toPath());
 
-//    @BeforeAll
-//    static void setUp() {
-//        try {
-//            resource = Files.createTempFile("test", ".txt").toFile();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    @BeforeEach
-//    void clean() {
-//        try {
-//            Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    @AfterAll
-//    static void tearDown() {
-//        Files.delete(resource.toPath());
-//    }
+    //    @BeforeAll
+    //    static void setUp() {
+    //        try {
+    //            resource = Files.createTempFile("test", ".txt").toFile();
+    //        } catch (IOException e) {
+    //            throw new RuntimeException(e);
+    //        }
+    //    }
+    //
+    //    @BeforeEach
+    //    void clean() {
+    //        try {
+    //            Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
+    //        } catch (IOException e) {
+    //            throw new RuntimeException(e);
+    //        }
+    //    }
+    //
+    //    @AfterAll
+    //    static void tearDown() {
+    //        Files.delete(resource.toPath());
+    //    }
 
     private void cleanTheFile() {
         try {
