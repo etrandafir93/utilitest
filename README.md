@@ -20,10 +20,10 @@ instead of the commonly used Before/After Each/All block methods.
 
 This library provides annotations to simplify test lifecycle management in JUnit 
 by allowing you to define setup and cleanup logic directly on fields. 
-The annotations [@DoBeforeAll](./src/main/java/io/github/etr/utilitest/junit/lambdas/DoBeforeAll.java),
-[@DoBeforeEach](./src/main/java/io/github/etr/utilitest/junit/lambdas/DoBeforeEach.java),
-[@DoAfterAll](./src/main/java/io/github/etr/utilitest/junit/lambdas/DoAfterAll.java),
-and [@DoAfterEach](./src/main/java/io/github/etr/utilitest/junit/lambdas/DoAfterEach.java),
+The annotations [@DoBeforeAll](junit-lambdas/src/main/java/io/github/etr/junit/lambdas/DoBeforeAll.java),
+[@DoBeforeEach](junit-lambdas/src/main/java/io/github/etr/junit/lambdas/DoBeforeEach.java),
+[@DoAfterAll](junit-lambdas/src/main/java/io/github/etr/junit/lambdas/DoAfterAll.java),
+and [@DoAfterEach](junit-lambdas/src/main/java/io/github/etr/junit/lambdas/DoAfterEach.java),
 enable concise and readable test code by invoking specified methods 
 or functional interfaces before/after tests.
 

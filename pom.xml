@@ -3,14 +3,20 @@
     <groupId>io.github.etrandafir93</groupId>
     <artifactId>utilitest</artifactId>
     <version>1.0.1</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>Utilitest</name>
     <description>A collection of test helpers for AssertJ, Mockito and Awaitility</description>
     <url>https://github.com/etrandafir93/utilitest</url>
 
+    <modules>
+        <module>junit-lambdas</module>
+        <module>assertj-mockito</module>
+    </modules>
+
     <properties>
         <java.version>21</java.version>
+        <junit-jupiter.version>5.8.1</junit-jupiter.version>
     </properties>
 
     <build>
@@ -87,19 +93,19 @@
             <version>[4.0.0,)</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>[5.8.1,)</version>
-            <scope>provided</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>[5.8.1,)</version>
+            <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
