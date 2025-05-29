@@ -6,12 +6,13 @@
     <packaging>pom</packaging>
 
     <name>Utilitest</name>
-    <description>A collection of test helpers for AssertJ, Mockito and Awaitility</description>
+    <description>A collection of test helpers for JUnit, AssertJ, Mockito and Awaitility...and more</description>
     <url>https://github.com/etrandafir93/utilitest</url>
 
     <modules>
         <module>junit-lambdas</module>
         <module>assertj-mockito</module>
+        <module>assertj-awaitility</module>
     </modules>
 
     <properties>
@@ -80,39 +81,7 @@
         </developer>
     </developers>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>[3.0.0,)</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>[4.0.0,)</version>
-            <scope>provided</scope>
-        </dependency>
 
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.13.0</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <distributionManagement>
         <repository>

@@ -10,25 +10,28 @@
     </parent>
 
     <groupId>org.example</groupId>
-    <artifactId>assertj-mockito</artifactId>
+    <artifactId>assertj-awaitility</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <awaitility.version>4.3.0</awaitility.version>
+        <assertj-core.version>3.27.0</assertj-core.version>
     </properties>
+
 
     <dependencies>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>[3.0.0,)</version>
+            <version>[${assertj-core.version},)</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>[4.0.0,)</version>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>[${awaitility.version},)</version>
             <scope>provided</scope>
         </dependency>
 
@@ -42,12 +45,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.13.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

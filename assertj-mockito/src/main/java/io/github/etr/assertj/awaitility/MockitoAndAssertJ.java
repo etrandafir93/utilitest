@@ -1,4 +1,4 @@
-package io.github.etr.assertj.mockito;
+package io.github.etr.assertj.awaitility;
 
 import java.util.function.Consumer;
 import org.assertj.core.api.AbstractAssert;
