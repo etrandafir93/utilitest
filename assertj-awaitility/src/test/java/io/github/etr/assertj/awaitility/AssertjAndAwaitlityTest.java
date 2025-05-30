@@ -3,6 +3,8 @@ package io.github.etr.assertj.awaitility;
 import static io.github.etr.assertj.awaitility.AssertjAndAwaitility.eventually;
 import static io.github.etr.assertj.awaitility.AssertjAndAwaitility.having;
 import static java.util.concurrent.CompletableFuture.runAsync;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -82,7 +84,25 @@ class AssertjAndAwaitlityTest {
         assertThat(legoals)
             .is(
                 eventually()
-                    .having(
+                    .goingTo(
+                        it -> it.hasFieldOrPropertyWithValue("age", 555)));
+    }
+
+
+    @Test
+    void eventualCondition_shouldPass_4() {
+        Elf legoals = new Elf("Legolas");
+
+        runAsync(() -> IntStream.range(0, 1_000)
+            .peek(__ -> sleep(5L))
+            .forEach(legoals::setAge));
+
+        assertThat(legoals)
+            .is(
+                eventually()
+                    .within(5, SECONDS)
+                    .checkingEvery(1, MILLISECONDS)
+                    .goingTo(
                         it -> it.hasFieldOrPropertyWithValue("age", 555)));
     }
 
@@ -98,7 +118,7 @@ class AssertjAndAwaitlityTest {
             assertThat(legoals)
                 .is(
                     eventually()
-                        .having(
+                        .goingTo(
                             it -> it.hasFieldOrPropertyWithValue("age", 9_999)))
         );
     }

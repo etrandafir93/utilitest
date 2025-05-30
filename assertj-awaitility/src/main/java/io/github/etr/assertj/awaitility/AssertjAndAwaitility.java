@@ -1,11 +1,13 @@
 package io.github.etr.assertj.awaitility;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.ObjectAssert;
 import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionFactory;
 
 public class AssertjAndAwaitility {
 
@@ -125,8 +127,20 @@ public class AssertjAndAwaitility {
         }
 
         public static class Builder<T> {
-            public UtilitestCondition<T> having(Consumer<ObjectAssert<T>> test) {
+            private ConditionFactory await = Awaitility.await();
+
+            public UtilitestCondition<T> goingTo(Consumer<ObjectAssert<T>> test) {
                 return new EventualCondition<>(test);
+            }
+
+            public Builder<T> checkingEvery(int amount, TimeUnit unit) {
+                await = await.pollInterval(amount, unit);
+                return this;
+            }
+
+            public Builder<T> within(int amount, TimeUnit unit) {
+                await = await.timeout(amount, unit);
+                return this;
             }
         }
     }

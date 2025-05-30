@@ -102,13 +102,13 @@ class JunitLambdasReadmeTests {
 This module offers a simple way to combine AssertJ assertions with Awaitility.
 
 We'll take advantage of the _Condition<>_ class, one of AssertJ's extension points.
-We can use `eventually().having(...)` to create an eventual condition:
+We can use `eventually().goingTo(...)` to create an eventual condition:
 
 ```java
 assertThat(legolas)
     .is(
       eventually()
-        .having(
+        .goingTo(
           it -> it.hasFieldOrPropertyWithValue("age", 100)));
 ```
 
@@ -118,16 +118,19 @@ Or we can use a more concise syntax:
 assertThat(legolas)
     .is(
       eventually(
-          it -> it.hasFieldOrPropertyWithValue("age", "Legolas")));
+          it -> it.hasFieldOrPropertyWithValue("age", 100));
 ```
 
 For the polling interval and timeout, we'll rely on Awaitility's default settings. 
-They can be set via these static methods:
+They can be set via the following config:
 ```java
-static {
-    Awaitility.setDefaultPollInterval(Duration.ofMillis(1));
-    Awaitility.setDefaultTimeout(Duration.ofSeconds(5));
-}
+assertThat(legoals)
+    .is(
+        eventually()
+            .within(5, SECONDS)
+            .checkingEvery(1, MILLISECONDS)
+            .goingTo(
+                it -> it.hasFieldOrPropertyWithValue("age", 555)));
 ```
 
 ## AssertJ + Mockito's _AssertMatcher_ 
@@ -151,49 +154,20 @@ void customAssertMatcher() {
 ```
 
 However, the failure messages from these custom argument matchers are often cryptic, 
-making it difficult to pinpoint the cause of the test failure:
-
-```plaintext
-Argument(s) are different! Wanted:
-fooService.process(
-    <custom argument matcher>
-);
--> at io.github.etr.utilitest.mockito.ReadmeExampelsTest$FooService.process(ReadmeExampelsTest.java:26)
-Actual invocations have different arguments:
-fooService.process(
-    io.github.etr.utilitest.mockito.ReadmeExampelsTest$Account@245a26e1
-);
--> at io.github.etr.utilitest.mockito.ReadmeExampelsTest.customAssertMatcher(ReadmeExampelsTest.java:62)
-```
+making it difficult to pinpoint the cause of the test failure.
 
 As a workaround, we can use a fluent AssertJ assertion within the custom _ArgumentMatcher_ 
-and always return true:
+and always return true. 
 
-```java
-@Test
-void assertMatcherWithAssertJ() {
-    FooService mock = Mockito.mock();
-    mock.process(new Account(1L, "John Doe", "johnDoe@gmail.com"));
-
-    Mockito.verify(mock).process(
-      Mockito.argThat(it -> {
-        Assertions.assertThat(it)
-          .hasFieldOrPropertyWithValue("accountId", 1L)
-          .hasFieldOrPropertyWithValue("name", "John Doe")
-          .hasFieldOrPropertyWithValue("email", "johndoe@gmail.com");
-        return true;
-      }));
-}
-```
 While this solution provides much clearer error messages, it comes with 
 the downside of adding a lot of boilerplate code. If the code is repetitive, 
 it can make the tests harder to read and maintain.
 
-So, let's remove all this ceremony and use utilitest's `MockitoAndAssertJ::argThat` instead:
+So, let's remove all this ceremony and use utilitest's `MockitoAndAssertJ::argHaving` instead:
 
 ```java
 Mockito.verify(mock).process(
-  MockitoAndAssertJ.argThat(it -> it
+  argHaving(it -> it
     .hasFieldOrPropertyWithValue("accountId", 1L)
     .hasFieldOrPropertyWithValue("name", "John Doe")
     .hasFieldOrPropertyWithValue("email", "johndoe@gmail.com")));
@@ -214,7 +188,7 @@ but value was:
 
 ### Other Assertions
 
-The `MockitoAndAssertJ::argThat` from the previous example enables us 
+The `MockitoAndAssertJ::argHaving` from the previous example enables us 
 to consume an ObjectAssert from AsserJ, that provides some basic assertions. 
 The assertJ API allows us to change this type to a more specialized instance of assertion, 
 to verify specific properties. For example, we can change the assertion type to a MapAssert 
@@ -232,7 +206,7 @@ void asInstanceOf() {
   mock.processMap(data);
 
   verify(mock).processMap(
-    MockitoAndAssertJ.argThat(it -> it
+    argHaving(it -> it
       .asInstanceOf(InstanceOfAssertFactories.MAP)
       .containsEntry(1L, "John")
       .containsEntry(2L, "Bobby")));
@@ -256,5 +230,3 @@ void arg_that() {
   );
 }
 ```
-
-
