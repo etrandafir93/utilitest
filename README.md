@@ -97,7 +97,40 @@ class JunitLambdasReadmeTests {
 }
 ```    
 
-## Mockito's _AssertMatcher_ and AsserJ
+## AssertJ + Awaitility
+
+This module offers a simple way to combine AssertJ assertions with Awaitility.
+
+We'll take advantage of the _Condition<>_ class, one of AssertJ's extension points.
+We can use `eventually().having(...)` to create an eventual condition:
+
+```java
+assertThat(legolas)
+    .is(
+      eventually()
+        .having(
+          it -> it.hasFieldOrPropertyWithValue("age", 100)));
+```
+
+Or we can use a more concise syntax:
+
+```java
+assertThat(legolas)
+    .is(
+      eventually(
+          it -> it.hasFieldOrPropertyWithValue("age", "Legolas")));
+```
+
+For the polling interval and timeout, we'll rely on Awaitility's default settings. 
+They can be set via these static methods:
+```java
+static {
+    Awaitility.setDefaultPollInterval(Duration.ofMillis(1));
+    Awaitility.setDefaultTimeout(Duration.ofSeconds(5));
+}
+```
+
+## AssertJ + Mockito's _AssertMatcher_ 
 
 To use _verify()_ mocks, we generally have two options. We can either capture the arguments 
 using a _Captor_, which adds some boilerplate code and overhead, 

@@ -48,6 +48,7 @@
                 <version>2.43.0</version>
                 <configuration>
                     <java>
+                        <toggleOffOn/>
                         <palantirJavaFormat/>
                         <importOrder/>
                         <removeUnusedImports/>
@@ -80,8 +81,6 @@
             <organizationUrl>https://github.com/etrandafir93</organizationUrl>
         </developer>
     </developers>
-
-
 
     <distributionManagement>
         <repository>

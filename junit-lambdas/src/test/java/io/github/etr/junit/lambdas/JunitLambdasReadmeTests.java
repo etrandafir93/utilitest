@@ -24,35 +24,6 @@ class JunitLambdasReadmeTests {
     @DoBeforeEach
     ThrowingRunnable clean = () -> Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
 
-    /***  Equivalent code, without junit-lambdas: ***
-     *
-     * @BeforeAll
-     * static void setUp() {
-     * try {
-     * resource = Files.createTempFile("test", ".txt").toFile();
-     * } catch (IOException e) {
-     * throw new RuntimeException(e);
-     * }
-     * }
-     *
-     * @BeforeEach
-     * void clean() {
-     * try {
-     * Files.writeString(resource.toPath(), "", TRUNCATE_EXISTING, WRITE);
-     * } catch (IOException e) {
-     * throw new RuntimeException(e);
-     * }
-     * }
-     *
-     * @AfterAll
-     * static void tearDown() {
-     * try {
-     * Files.delete(resource.toPath());
-     * } catch (IOException e) {
-     * throw new RuntimeException(e);
-     * }
-     * }
-     */
     @Test
     void shouldPassIfFileCleared1() throws IOException {
         String initialContent = Files.readString(resource.toPath());

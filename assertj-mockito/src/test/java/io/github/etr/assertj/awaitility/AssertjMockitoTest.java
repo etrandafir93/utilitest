@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -65,10 +64,10 @@ class AssertjMockitoTest {
         FooService mock = Mockito.mock();
         mock.process(new Account(1L, "John Doe", "johnDoe@gmail.com"));
 
-        verify(mock).process(Mockito.argThat(it -> it.getAccountId()
-            .equals(1L) && it.getName()
-            .equals("John Doe") && it.getEmail()
-            .equals("johnDoe@gmail.com")));
+        verify(mock)
+                .process(Mockito.argThat(it -> it.getAccountId().equals(1L)
+                        && it.getName().equals("John Doe")
+                        && it.getEmail().equals("johnDoe@gmail.com")));
     }
 
     @Test
@@ -78,9 +77,9 @@ class AssertjMockitoTest {
 
         verify(mock).process(Mockito.argThat(it -> {
             Assertions.assertThat(it)
-                .hasFieldOrPropertyWithValue("accountId", 1L)
-                .hasFieldOrPropertyWithValue("name", "John Doe")
-                .hasFieldOrPropertyWithValue("email", "johnDoe@gmail.com");
+                    .hasFieldOrPropertyWithValue("accountId", 1L)
+                    .hasFieldOrPropertyWithValue("name", "John Doe")
+                    .hasFieldOrPropertyWithValue("email", "johnDoe@gmail.com");
             return true;
         }));
     }
@@ -91,8 +90,8 @@ class AssertjMockitoTest {
         mock.process(new Account(1L, "John Doe", "johnDoe@gmail.com"));
 
         verify(mock).process(argHaving(it -> it.hasFieldOrPropertyWithValue("accountId", 1L)
-            .hasFieldOrPropertyWithValue("name", "John Doe")
-            .hasFieldOrPropertyWithValue("email", "johnDoe@gmail.com")));
+                .hasFieldOrPropertyWithValue("name", "John Doe")
+                .hasFieldOrPropertyWithValue("email", "johnDoe@gmail.com")));
     }
 
     @Test
@@ -103,8 +102,8 @@ class AssertjMockitoTest {
         mock.processMap(data);
 
         verify(mock).processMap(argHaving(it -> it.asInstanceOf(InstanceOfAssertFactories.MAP)
-            .containsEntry(1L, "John")
-            .containsEntry(2L, "Bobby")));
+                .containsEntry(1L, "John")
+                .containsEntry(2L, "Bobby")));
     }
 
     @Test
@@ -112,7 +111,9 @@ class AssertjMockitoTest {
         FooService mock = Mockito.mock();
         mock.processDateAndList(now(), List.of("A", "B", "C"));
 
-        verify(mock).processDateAndList(arg(TEMPORAL).that(it -> it.isCloseTo(now(), within(1_000, MILLIS))),
-            arg(LIST).that(it -> it.containsExactly("A", "B", "C")));
+        verify(mock)
+                .processDateAndList(
+                        arg(TEMPORAL).that(it -> it.isCloseTo(now(), within(1_000, MILLIS))),
+                        arg(LIST).that(it -> it.containsExactly("A", "B", "C")));
     }
 }

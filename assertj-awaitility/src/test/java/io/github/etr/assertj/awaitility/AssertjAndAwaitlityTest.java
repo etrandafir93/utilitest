@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.Duration;
 import java.util.stream.IntStream;
-
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,7 @@ class AssertjAndAwaitlityTest {
         Awaitility.setDefaultTimeout(Duration.ofSeconds(5));
     }
 
+    // spotless:off
     @Test
     void promptCondition_shouldFail() {
         Elf legoals = new Elf("Legoals");
@@ -58,10 +58,24 @@ class AssertjAndAwaitlityTest {
     }
 
     @Test
-    void eventualCondition_shouldPass_2() {
+    void eventualCondition_shouldPass_3() {
         Elf legoals = new Elf("Legolas");
 
         runAsync(() -> IntStream.range(0,1_000)
+            .peek(__ -> sleep(5L))
+            .forEach(legoals::setAge));
+
+        assertThat(legoals)
+            .is(eventually(
+                it -> it.hasFieldOrPropertyWithValue("age", 555)));
+    }
+
+
+    @Test
+    void eventualCondition_shouldPass_2() {
+        Elf legoals = new Elf("Legolas");
+
+        runAsync(() -> IntStream.range(0, 1_000)
             .peek(__ -> sleep(5L))
             .forEach(legoals::setAge));
 
@@ -76,7 +90,7 @@ class AssertjAndAwaitlityTest {
     void eventualCondition_shouldFail() {
         Elf legoals = new Elf("Legolas");
 
-        runAsync(() -> IntStream.range(0,1_000)
+        runAsync(() -> IntStream.range(0, 1_000)
             .peek(__ -> sleep(5L))
             .forEach(legoals::setAge));
 
@@ -88,6 +102,8 @@ class AssertjAndAwaitlityTest {
                             it -> it.hasFieldOrPropertyWithValue("age", 9_999)))
         );
     }
+
+    // spotless:on
 
     private void sleep(long millis) {
         try {
@@ -109,5 +125,4 @@ class AssertjAndAwaitlityTest {
             this.age = age;
         }
     }
-
 }
