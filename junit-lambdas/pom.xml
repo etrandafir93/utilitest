@@ -10,20 +10,18 @@
         <version>1.0.1</version>
     </parent>
 
-    <groupId>org.example</groupId>
+    <groupId>io.github.etrandafir93</groupId>
     <artifactId>junit-lambdas</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${junit-jupiter.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -13,12 +13,32 @@
         <module>junit-lambdas</module>
         <module>assertj-mockito</module>
         <module>assertj-awaitility</module>
+        <module>tracing-http</module>
     </modules>
 
     <properties>
         <java.version>21</java.version>
-        <junit-jupiter.version>5.8.1</junit-jupiter.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.10.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -89,6 +109,4 @@
             <url>https://maven.pkg.github.com/etrandafir93/utilitest</url>
         </repository>
     </distributionManagement>
-
-
 </project>

@@ -1,0 +1,19 @@
+
+
+todo.api.url: https://jsonplaceholder.typicode.com
+
+spring:
+  application.name: dummy-app
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level traceId=%X{traceId} spanId=%X{spanId} - %msg%n"
+
+management:
+  endpoints.web.exposure.include: '*'
+  tracing:
+    enabled: true
+    propagation:
+      type: w3c
+    sampling:
+      probability: 1.0
