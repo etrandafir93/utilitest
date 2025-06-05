@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.github.etr.tracting.test.dummy.todo.TodoClient;
+import io.github.etr.tracting.test.dummy.todo.TodoDto;
 
 @RestController
 @RequestMapping("api/dummy")
@@ -33,7 +34,11 @@ public class DummyApp {
     String getDummy(@RequestParam(name = "todo") Long id, @RequestHeader Map<String, Object> headers) {
         LOG.info("Received GET request for todo #{}", id);
         LOG.info("Headers: {}", headers);
-        return toDoClient.get(id).getBody().title();
+        LOG.info("Sending Request to TODO service");
+        TodoDto response = toDoClient.get(id)
+            .getBody();
+        LOG.info("Received Response from TODO service: {}", response);
+        return response.title();
     }
 
     public DummyApp(TodoClient toDoClient) {

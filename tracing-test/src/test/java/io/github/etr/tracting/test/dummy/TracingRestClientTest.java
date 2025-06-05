@@ -49,18 +49,14 @@ class TracingRestClientTest {
     @Traceable
     RestClient restClient;
 
+    @Traceable
+    Traceparent trace;
+
     @DoBeforeEach
     Runnable stub = this::stubTodoEndpoint;
 
-    @RepeatedTest(5)
-    void shouldInjectMockMvc(Traceparent trace) {
-        assertThat(restClient).isNotNull();
-        assertThat(MDC.getCopyOfContextMap()).containsEntry("traceId", trace.traceId())
-            .containsEntry("spanId", trace.spanId());
-    }
-
     @Test
-    void restClientShouldPropagateTrace(Traceparent trace) {
+    void restClientShouldPropagateTrace_fieldInjection() {
         // when
         String resp = restClient.get()
             .uri("http://localhost:8080/api/dummy?todo=1")
@@ -87,6 +83,36 @@ class TracingRestClientTest {
             .asString()
             .contains(trace.traceId())
             .doesNotContain(trace.spanId());
+    }
+
+    @Test
+    void restClientShouldPropagateTrace_paramInjection(Traceparent traceParam, RestClient restClientPram) {
+        // when
+        String resp = restClientPram.get()
+            .uri("http://localhost:8080/api/dummy?todo=1")
+            .retrieve()
+            .body(String.class);
+
+        assertThat(resp)
+            .isEqualTo("fugiat veniam minus");
+
+        // then
+        var requestsOut = todosService.getServeEvents()
+            .getRequests();
+        assertThat(requestsOut)
+            .hasSize(1);
+
+        // and
+        var traceparentOut = requestsOut.getFirst()
+            .getRequest()
+            .getHeaders()
+            .getHeader("traceparent");
+
+        assertThat(traceparentOut.values())
+            .hasSize(1).first()
+            .asString()
+            .contains(traceParam.traceId())
+            .doesNotContain(traceParam.spanId());
     }
 
     private StubMapping stubTodoEndpoint() {

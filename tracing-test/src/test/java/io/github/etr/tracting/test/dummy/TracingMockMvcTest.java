@@ -1,13 +1,10 @@
 package io.github.etr.tracting.test.dummy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
+import org.assertj.core.api.Assumptions;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,6 +54,10 @@ class TracingMockMvcTest {
     @RepeatedTest(5)
     void shouldInjectMockMvc() {
         assertThat(mockMvc).isNotNull();
+
+        // making sure MDC map is not null
+        MDC.put("dummyKey", "dummyValue");
+
         assertThat(MDC.getCopyOfContextMap())
             .doesNotContainKey("traceId")
             .doesNotContainKey("spanId");

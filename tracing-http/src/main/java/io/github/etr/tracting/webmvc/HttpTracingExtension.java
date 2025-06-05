@@ -1,13 +1,12 @@
 package io.github.etr.tracting.webmvc;
 
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -39,14 +38,14 @@ public class HttpTracingExtension implements BeforeEachCallback, AfterEachCallba
         LOG.info("Starting test execution: {} with traceparent: {}", testName, traceparent);
 
         Object testInstance = extensionCtx.getRequiredTestInstance();
-        Field[] declaredFields = testInstance.getClass().getDeclaredFields();
-
-        traceableFields(declaredFields)
+        stream(testInstance.getClass().getDeclaredFields())
+                .filter(it -> it.isAnnotationPresent(Traceable.class))
                 .peek(it -> LOG.debug("Injecting field: {} of type: {}", it.getName(), it.getType()))
                 .forEach(it -> {
                     switch (it.getType().getSimpleName()) {
-                        case "RestClient" -> setq(it, testInstance, () -> restClient(traceparent));
-                        case "MockMvc" -> setq(it, testInstance, () -> mockMvc(traceparent, extensionCtx));
+                        case "RestClient" -> setq(it, testInstance, () -> currentRestClient(extensionCtx));
+                        case "MockMvc" -> setq(it, testInstance, () -> mockMvc(extensionCtx));
+                        case "Traceparent" -> setq(it, testInstance, () -> currentTraceparent(extensionCtx));
                         default -> throw new IllegalStateException("Unsupported annotated type: " + it);
                     }
                 });
@@ -71,13 +70,19 @@ public class HttpTracingExtension implements BeforeEachCallback, AfterEachCallba
     @Override
     public boolean supportsParameter(ParameterContext paramCtx, ExtensionContext extensionCtx)
             throws ParameterResolutionException {
-        return paramCtx.getParameter().getType().equals(Traceparent.class);
+        Class<?> type = paramCtx.getParameter().getType();
+        return type.equals(Traceparent.class) || type.equals(RestClient.class);
     }
 
     @Override
     public Object resolveParameter(ParameterContext paramCtx, ExtensionContext extensionCtx)
             throws ParameterResolutionException {
-        return currentTraceparent(extensionCtx);
+        String type = paramCtx.getParameter().getType().getSimpleName();
+        return switch (type) {
+            case "Traceparent" -> currentTraceparent(extensionCtx);
+            case "RestClient" -> currentRestClient(extensionCtx);
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        };
     }
 
     private static Traceparent currentTraceparent(ExtensionContext extensionCtx) {
@@ -102,21 +107,20 @@ public class HttpTracingExtension implements BeforeEachCallback, AfterEachCallba
         return Boolean.parseBoolean(value);
     }
 
-    private static String randomBytes(int length) {
-        return ThreadLocalRandom.current()
-                .ints(0, 256)
-                .mapToObj(it -> String.format("%02x", it))
-                .limit(length)
-                .collect(Collectors.joining());
+    private static RestClient currentRestClient(ExtensionContext extensionCtx) {
+        Traceparent traceparent = currentTraceparent(extensionCtx);
+        return extensionCtx
+                .getStore(TEST_TRACING_EXTENSION_STORE)
+                .getOrComputeIfAbsent(
+                        "RestClient",
+                        __ -> RestClient.builder()
+                                .defaultHeaders(headers -> headers.set("traceparent", traceparent.toString()))
+                                .build(),
+                        RestClient.class);
     }
 
-    private static RestClient restClient(Traceparent traceparent) {
-        return RestClient.builder()
-                .defaultHeaders(headers -> headers.set("traceparent", traceparent.toString()))
-                .build();
-    }
-
-    private static MockMvc mockMvc(Traceparent traceparent, ExtensionContext extensionCtx) {
+    private static MockMvc mockMvc(ExtensionContext extensionCtx) {
+        var traceparent = currentTraceparent(extensionCtx);
         var appContext = SpringExtension.getApplicationContext(extensionCtx);
         if (appContext instanceof WebApplicationContext webCtx) {
             return MockMvcBuilders.webAppContextSetup(webCtx)
@@ -136,7 +140,11 @@ public class HttpTracingExtension implements BeforeEachCallback, AfterEachCallba
         }
     }
 
-    private static Stream<Field> traceableFields(Field[] declaredFields) {
-        return stream(declaredFields).filter(it -> it.isAnnotationPresent(Traceable.class));
+    private static String randomBytes(int length) {
+        return ThreadLocalRandom.current()
+                .ints(0, 256)
+                .mapToObj(it -> String.format("%02x", it))
+                .limit(length)
+                .collect(joining());
     }
 }
