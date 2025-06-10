@@ -1,7 +1,0 @@
-
-spring.application.name: dummy-app
-
-logging.pattern.console: "%d{HH:mm:ss.SSS} [%thread] %-5level traceId=%X{traceId} spanId=%X{spanId} - %msg%n"
-
-management.endpoints.web.exposure.include: '*'
-

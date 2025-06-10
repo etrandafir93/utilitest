@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.etrandafir93</groupId>
         <artifactId>utilitest</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
 
     <groupId>io.github.etrandafir93</groupId>

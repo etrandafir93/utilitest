@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.etrandafir93</groupId>
-        <artifactId>utilitest</artifactId>
+        <artifactId>tracing</artifactId>
         <version>1.0.2</version>
     </parent>
 
     <groupId>io.github.etrandafir93</groupId>
-    <artifactId>assertj-mockito</artifactId>
+    <artifactId>tracing-kafka</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -20,33 +20,31 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>[3.0.0,)</version>
-            <scope>provided</scope>
+            <groupId>io.github.etrandafir93</groupId>
+            <artifactId>tracing-common</artifactId>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>[4.0.0,)</version>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
             <scope>provided</scope>
+            <version>[3.1.0,)</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>provided</scope>
+            <version>[3.1.0,)</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.13.0</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
