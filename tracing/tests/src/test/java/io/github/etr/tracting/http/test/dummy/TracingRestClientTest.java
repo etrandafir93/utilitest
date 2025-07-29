@@ -24,7 +24,6 @@ import io.github.etr.tracting.kafka.Traceparent;
 // spotless:off
 @SpringBootTest(
     webEnvironment = WebEnvironment.DEFINED_PORT,
-    classes = DummyApp.class,
     properties = {
         "todo.api.url=${wiremock.server.baseUrl}",
         "utilitest.tracing.add-to-mdc=true"
@@ -51,7 +50,7 @@ class TracingRestClientTest {
     void restClientShouldPropagateTrace_fieldInjection() {
         // when
         String resp = restClient.get()
-            .uri("http://localhost:8080/api/dummy?todo=1")
+            .uri("http://localhost:8080/api/tasks/1/title")
             .retrieve()
             .body(String.class);
 
@@ -81,7 +80,7 @@ class TracingRestClientTest {
     void restClientShouldPropagateTrace_paramInjection(Traceparent traceParam, RestClient restClientPram) {
         // when
         String resp = restClientPram.get()
-            .uri("http://localhost:8080/api/dummy?todo=1")
+            .uri("http://localhost:8080/api/tasks/1/title")
             .retrieve()
             .body(String.class);
 

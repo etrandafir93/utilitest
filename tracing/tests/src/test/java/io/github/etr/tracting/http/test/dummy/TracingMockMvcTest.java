@@ -25,18 +25,13 @@ import io.github.etr.tracting.http.HttpTracingExtension;
 import io.github.etr.tracting.kafka.Traceable;
 import io.github.etr.tracting.kafka.Traceparent;
 
-// spotless:off
-@SpringBootTest(
-    webEnvironment = WebEnvironment.MOCK,
-    classes = DummyApp.class,
-    properties = {
+@SpringBootTest(properties = {
         "todo.api.url=${wiremock.server.baseUrl}",
         "utilitest.tracing.add-to-mdc=false"
     })
 @EnableWireMock
 @AutoConfigureObservability
 @ExtendWith({HttpTracingExtension.class, JunitLambdasExtension.class})
-// spotless:on
 class TracingMockMvcTest {
 
     @InjectWireMock

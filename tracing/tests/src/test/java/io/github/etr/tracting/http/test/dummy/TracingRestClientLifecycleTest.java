@@ -5,23 +5,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.MDC;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.web.client.RestClient;
+import org.wiremock.spring.EnableWireMock;
 
+import io.github.etr.junit.lambdas.JunitLambdasExtension;
 import io.github.etr.tracting.http.HttpTracingExtension;
 import io.github.etr.tracting.kafka.Traceable;
 import io.github.etr.tracting.kafka.Traceparent;
 
-// spotless:off
-@SpringBootTest(
-    webEnvironment = WebEnvironment.MOCK,
-    classes = DummyApp.class,
-    properties = {
-        "utilitest.tracing.add-to-mdc=true"
-    })
-@ExtendWith(HttpTracingExtension.class)
-// spotless:on
+@SpringBootTest(properties = {
+    "todo.api.url=http://dummy.api.url",
+    "utilitest.tracing.add-to-mdc=true"
+})
+@ExtendWith({HttpTracingExtension.class, JunitLambdasExtension.class})
 class TracingRestClientLifecycleTest {
 
     @Traceable

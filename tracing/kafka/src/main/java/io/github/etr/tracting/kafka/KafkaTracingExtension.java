@@ -29,23 +29,6 @@ public class KafkaTracingExtension implements BeforeEachCallback, AfterEachCallb
     private static final Logger LOG = LoggerFactory.getLogger(KafkaTracingExtension.class);
 
     @Override
-    public void afterEach(ExtensionContext extensionCtx) throws Exception {
-        try {
-            String testName = extensionCtx.getTestMethod().get().getName();
-            LOG.info("Finished test execution: {} with traceparent: {}", testName, currentTraceparent(extensionCtx));
-            extensionCtx.getStore(TEST_TRACING_EXTENSION_STORE).remove("traceparent");
-            extensionCtx.getStore(TEST_TRACING_EXTENSION_STORE).remove("kafkaTemplate");
-
-            if (shouldAddTraceToMdc(extensionCtx)) {
-                MDC.remove("traceId");
-                MDC.remove("spanId");
-            }
-        } catch (Exception e) {
-            LOG.error("Error during afterEach callback for test: {}", extensionCtx.getDisplayName(), e);
-        }
-    }
-
-    @Override
     public void beforeEach(ExtensionContext extensionCtx) throws Exception {
         Traceparent traceparent = currentTraceparent(extensionCtx);
 
@@ -66,15 +49,38 @@ public class KafkaTracingExtension implements BeforeEachCallback, AfterEachCallb
     }
 
     @Override
-    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-            throws ParameterResolutionException {
-        return false;
+    public void afterEach(ExtensionContext extensionCtx) throws Exception {
+        try {
+            String testName = extensionCtx.getTestMethod().get().getName();
+            LOG.info("Finished test execution: {} with traceparent: {}", testName, currentTraceparent(extensionCtx));
+            extensionCtx.getStore(TEST_TRACING_EXTENSION_STORE).remove("traceparent");
+            extensionCtx.getStore(TEST_TRACING_EXTENSION_STORE).remove("kafkaTemplate");
+
+            if (shouldAddTraceToMdc(extensionCtx)) {
+                MDC.remove("traceId");
+                MDC.remove("spanId");
+            }
+        } catch (Exception e) {
+            LOG.error("Error during afterEach callback for test: {}", extensionCtx.getDisplayName(), e);
+        }
     }
 
     @Override
-    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+    public boolean supportsParameter(ParameterContext paramCtx, ExtensionContext extensionCtx)
             throws ParameterResolutionException {
-        return null;
+        Class<?> type = paramCtx.getParameter().getType();
+        return type.equals(Traceparent.class) || type.equals(KafkaTemplate.class);
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext paramCtx, ExtensionContext extensionCtx)
+            throws ParameterResolutionException {
+        String type = paramCtx.getParameter().getType().getSimpleName();
+        return switch (type) {
+            case "Traceparent" -> currentTraceparent(extensionCtx);
+            case "KafkaTemplate" -> currentKafkaTemplate(extensionCtx);
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        };
     }
 
     private static Traceparent currentTraceparent(ExtensionContext extensionCtx) {
