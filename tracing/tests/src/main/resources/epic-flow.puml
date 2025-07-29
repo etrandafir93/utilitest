@@ -1,0 +1,23 @@
+@startuml Epic Flow
+!theme plain
+
+' Define participants
+participant "Kafka\nBroker" as Kafka #LightYellow
+box "Application" #LightBlue
+    participant "Epic Module" as Epic
+    participant "Task Module" as Task
+end box
+participant "External\nTodo Service" as External #LightGreen
+
+Kafka -> Epic : 1. create.epic.command
+'note right: Command contains epic title\nand list of todo IDs
+
+Epic -> Task : 2. HTTP GET /api/ticket/{id}/title
+Task -> External : 3. HTTP GET /todos/{id}
+External -> Task : 4. HTTP Response
+Task -> Epic : 5. HTTP Response
+
+Epic -> Kafka : 6. epic.created.event
+'note right: Event contains epic title\nand resolved todo items
+
+@enduml
