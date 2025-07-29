@@ -1,17 +1,83 @@
 # Utilitest
 
-Utilitest is a collection of test utilities that provides integration support for popular 
-testing libraries like AssertJ, Mockito, and Awaitility.
+Utilitest is a collection of test-specific utilities for working with
+popular testing libraries, such as AssertJ, Mockito, and Awaitility.
 
-Go ahead and add the latest version of the [library](https://github.com/etrandafir93/utilitest/packages) to your project:
-```xml
-<dependency>
-  <groupId>io.github.etrandafir93</groupId>
-  <artifactId>utilitest</artifactId>
-  <version>${version}</version>
-  <scope>test</scope>
-</dependency>
+The tracing module offers support for injecting traceIDs into tests, 
+for correlating the test logs or verifying the correct trace propagation.
+
+
+## Distributed Tracing Module
+
+The tracing module allows us to test the correct trace propagation for SpringBoot applications.
+
+Here's a typical flow of a request through multiple services with automatic trace propagation:
+
+```plantuml
+@startuml Epic Flow
+!theme plain
+
+participant "Kafka\nBroker" as Kafka #LightYellow
+box "Application" #LightBlue
+    participant "Epic Module" as Epic
+    participant "Task Module" as Task
+end box
+participant "External\nTodo Service" as External #LightGreen
+
+Kafka -> Epic : 1. create.epic.command
+Epic -> Task : 2. HTTP GET /api/ticket/{id}/title
+Task -> External : 3. HTTP GET /todos/{id}
+External -> Task : 4. HTTP Response
+Task -> Epic : 5. HTTP Response
+Epic -> Kafka : 6. epic.created.event
+
+@enduml
 ```
+
+We can test the trace propagation for Kafka and HTTP requests, 
+using the [TracingKafkaExtension](./tracing/kafka/src/main/java/io/github/etr/tracting/kafka/KafkaTracingExtension.java) 
+and [TracingHttpExtension](./tracing/http/src/main/java/io/github/etr/tracting/http/TracingHttpExtension.java) JUnit extensions.
+
+Here is an example of a test that uses the _TracingKafkaExtension_, 
+which will inject a _KafkaTemplate_ object into the test.
+As a result, a _traceparent_ header will be automatically 
+injected into all messages sent using this _kafkaTemplate_ instance:
+
+```java
+@ExtendWith(KafkaTracingExtension.class)
+class TracingKafkaTest extends IntegrationTest {
+
+    @Test
+    void integrationTest(
+        @Traceable Traceparent traceparent,
+        @Traceable KafkaTemplate<Object, Object> kafkaTemplate
+    ) throws Exception {
+
+        // given
+        kafkaTemplate.send("create.epic.command",
+            new CreateEpicCommand("Migrate to JUnit5", List.of(1L, 2L))).get();
+
+        // when
+        var messageOut = consumeOneMessage("epic.created.event", ofSeconds(10));
+
+        // then
+        var headerOut = messageOut.headers()
+            .headers("traceparent")
+            .iterator().next();
+        assertThat(headerOut)
+            .extracting(it -> new String(it.value())).asString()
+            .contains(traceparent.traceId())
+            .doesNotContain(traceparent.spanId());
+    }
+}
+```
+
+As we can see, we can use the injected _Traceparent_ instance 
+to inspect the _traceId_ and _spanId_ of the current test trace.
+
+In our test, we treat the application like a black box, 
+only decorating the input message with a traceparent header
+and verifying the outgoing messages to see if the _traceId_ is propagated.
 
 ## JUnit Lambdas
 
