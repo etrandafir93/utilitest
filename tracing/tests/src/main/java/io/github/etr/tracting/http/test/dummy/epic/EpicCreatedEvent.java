@@ -2,12 +2,11 @@ package io.github.etr.tracting.http.test.dummy.epic;
 
 import java.util.List;
 
-public record EpicCreated(
-    String id,
+public record EpicCreatedEvent(
     String title,
-    List<Todo> todos) {
+    List<Task> todos) {
 
-    record Todo(
-        String id,
+    record Task(
+        Long id,
         String title) {}
 }

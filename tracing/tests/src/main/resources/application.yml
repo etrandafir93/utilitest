@@ -4,6 +4,18 @@ todo.api.url: https://jsonplaceholder.typicode.com
 
 spring:
   application.name: dummy-app
+  kafka:
+#    bootstrap-servers: localhost:9092 <-- injected by testcotainers
+    consumer:
+      group-id: dummy-app-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: io.github.etr.tracting.http.test.dummy.epic
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 logging:
   pattern:

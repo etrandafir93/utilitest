@@ -2,6 +2,8 @@ package io.github.etr.tracting.http.test.dummy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
@@ -21,30 +23,16 @@ import io.github.etr.tracting.http.HttpTracingExtension;
 import io.github.etr.tracting.kafka.Traceable;
 import io.github.etr.tracting.kafka.Traceparent;
 
-// spotless:off
-@SpringBootTest(
-    webEnvironment = WebEnvironment.DEFINED_PORT,
-    properties = {
-        "todo.api.url=${wiremock.server.baseUrl}",
-        "utilitest.tracing.add-to-mdc=true"
-    })
-@EnableWireMock
-@AutoConfigureObservability // !! --> I can include it inside  TracingRestClientExtension !!
 @ExtendWith({HttpTracingExtension.class, JunitLambdasExtension.class})
-// spotless:on
-class TracingRestClientTest {
-
-    @InjectWireMock
-    WireMockServer todosService;
-
+class TracingRestClientTest extends IntegrationTest {
     @Traceable
     RestClient restClient;
-
     @Traceable
     Traceparent trace;
-
     @DoBeforeEach
-    Runnable stub = this::stubTodoEndpoint;
+    Runnable stub = () -> stubTodoEndpoint(Map.of(
+        1L, "dummy task name"
+    ));
 
     @Test
     void restClientShouldPropagateTrace_fieldInjection() {
@@ -55,7 +43,7 @@ class TracingRestClientTest {
             .body(String.class);
 
         assertThat(resp)
-            .isEqualTo("fugiat veniam minus");
+            .isEqualTo("dummy task name");
 
         // then
         var requestsOut = todosService.getServeEvents()
@@ -85,7 +73,7 @@ class TracingRestClientTest {
             .body(String.class);
 
         assertThat(resp)
-            .isEqualTo("fugiat veniam minus");
+            .isEqualTo("dummy task name");
 
         // then
         var requestsOut = todosService.getServeEvents()
@@ -106,16 +94,4 @@ class TracingRestClientTest {
             .doesNotContain(traceParam.spanId());
     }
 
-    private StubMapping stubTodoEndpoint() {
-        return todosService.stubFor(WireMock.get("/todos/1")
-            .willReturn(WireMock.ok("""
-                    {
-                      "userId": 1,
-                      "id": 1,
-                      "title": "fugiat veniam minus",
-                      "completed": false
-                    }
-                    """)
-                .withHeader("Content-Type", "application/json")));
-    }
 }
